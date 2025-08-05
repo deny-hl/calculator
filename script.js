@@ -1,5 +1,13 @@
 const container = document.querySelector('#container');
 const buttons = container.querySelectorAll('button');
+const state = {
+  previouValue: null,
+  currentInput: '0',
+  operator: null,
+  resultDisplayed: false
+}
+console.log(state);
+
 
 buttons.forEach(btn => {
   btn.addEventListener('click', (event) => {
@@ -43,4 +51,10 @@ function operate(operator, a, b) {
       result = divide(x, y);
       break;
   }
+
+  if (typeof result === 'number') {
+    return parseFloat(result.toFixed(10));
+  }
+
+  return result;
 }

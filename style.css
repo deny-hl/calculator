@@ -12,7 +12,7 @@ body {
   background-color: bisque;
 }
 
-.container {
+#container {
   display: grid;
   grid-template-columns: repeat(4, 100px);
   grid-template-rows: minmax(100px, auto) repeat(5, 80px);
@@ -23,7 +23,7 @@ body {
   border: 3px solid;
 }
 
-.item:nth-child(1) {
+#display {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
@@ -31,6 +31,6 @@ body {
   padding: 8px;
 }
 
-.item:nth-child(18) {
+.zero {
   grid-column: span 2;
 }
