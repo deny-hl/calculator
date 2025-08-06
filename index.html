@@ -10,25 +10,29 @@
   <main id="calculator">
     <div class="container" id="container">
       <div id="display">0</div>
-      <button type="button" value="1" data-action="clear">AC</button>
-      <button type="button" value="" data-operator="plusMinus">=/-</button>
-      <button type="button" value="" data-operator="devide">/</button>
-      <button type="button" value="" data-operator="percent">%</button>
-      <button type="button" value="" data-digit="7">7</button>
-      <button type="button" value="" data-digit="8">8</button>
-      <button type="button" value="" data-digit="9">9</button>
-      <button type="button" value="" data-operand="multiply">*</button>
-      <button type="button" value="" data-digit="4">4</button>
-      <button type="button" value="" data-digit="5">5</button>
-      <button type="button" value="" data-digit="6">6</button>
-      <button type="button" value="" data-operand="minus">-</button>
-      <button type="button" value="" data-digit="1">1</button>
-      <button type="button" value="" data-digit="2">2</button>
-      <button type="button" value="" data-digit="3">3</button>
-      <button type="button" value="" data-operand="plus">+</button>
-      <button class="zero" type="button" value="" data-digit="0">0</button>
-      <button type="button" value="" data-key="dot">.</button>
-      <button type="button" value="" data-operand="equal">=</button>
+
+      <button class="clear" data-action="clear">Clear</button>
+      <button data-action="backspace">⌫</button>
+      <button data-operator="/">/</button>
+
+      <button data-digit="7">7</button>
+      <button data-digit="8">8</button>
+      <button data-digit="9">9</button>
+      <button data-operator="*">*</button>
+
+      <button data-digit="4">4</button>
+      <button data-digit="5">5</button>
+      <button data-digit="6">6</button>
+      <button data-operator="-">-</button>
+
+      <button data-digit="1">1</button>
+      <button data-digit="2">2</button>
+      <button data-digit="3">3</button>
+      <button data-operator="+">+</button>
+
+      <button class="zero" data-digit="0">0</button>
+      <button data-action="dot">.</button>
+      <button data-action="equals">=</button>
     </div>
   </main>
   <script src="./script.js"></script>

@@ -1,22 +1,5 @@
-const container = document.getElementById('container');
-const buttons = container.querySelectorAll('button');
-const displayElement = document.getElementById('display');
-const state = {
-  previouValue: null,
-  currentInput: '0',
-  operator: null,
-  resultDisplayed: false
-}
-console.log(state);
-
-
-
-buttons.forEach(btn => {
-  btn.addEventListener('click', (event) => {
-    console.log(event.currentTarget);
-    
-  })
-})
+const calculator = document.getElementById('calculator');
+const display = document.getElementById('display')
 
 function add(a, b) {
   return a + b;
@@ -31,7 +14,7 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-  return b === 0 ? 'Error' : b / a;
+  return b === 0 ? 'Error' : a / b;
 }
 
 function operate(operator, a, b) {
@@ -54,43 +37,111 @@ function operate(operator, a, b) {
       break;
   }
 
-  if (typeof result === 'number') {
-    return parseFloat(result.toFixed(10));
+  if (typeof result === 'number' && !Number.isInteger(result)) {
+    return Math.round(result * 100000000) / 100000000;
   }
 
   return result;
 }
 
-function logState(eventSource) {
-  console.log(`${eventSource}`, state);
+//variables to store state
+let displayValue = '0';
+let firstNumber = null;
+let operator = null;
+let waitingForOperand = false;
+
+//function to update display
+function updateDisplay() {
+  display.textContent = displayValue;
 }
 
-const digitButtons = document.querySelectorAll('[data-digit]');
-
-digitButtons.forEach(btn =>
-  btn.addEventListener('click', () => {
-    const digit = btn.dataset.digit;
-
-    if (state.resultDisplayed) {
-      state.currentInput = digit;
-      state.resultDisplayed = false;
-    } else {
-      state.currentInput =
-      state.currentInput === '0' ? digit : state.currentInput + digit;
-    }
-    displayElement.textContent = state.currentInput;
-    logState('digit ${digit}');
-  })
-)
-
-const dotButton = document.querySelector('[data-key="dot"]');
-dotButton.addEventListener('click', () => {
-  if (state.resultDisplayed) {
-    state.currentInput = '0.';
-    state.resultDisplayed = false;
-  } else if (!state.currentInput.includes('.')) {
-    state.currentInput += '.';
+function inputDigit(digit) {
+  if (waitingForOperand) {
+    displayValue = digit;
+    waitingForOperand = false;
+  } else {
+    displayValue = displayValue === '0' ? digit : displayValue + digit;
   }
-  displayElement.textContent = state.currentInput;
-  logState('decimal');
-})
+  updateDisplay();
+}
+
+//decimal point functionality
+function inputDecimal() {
+  if (waitingForOperand) {
+    displayValue = '0.';
+    waitingForOperand = false;
+  } else if (displayValue.indexOf('.') === -1) {
+    displayValue += '.';
+  }
+  updateDisplay();
+}
+
+//backspace functionality
+function backspace() {
+  if (displayValue.length > 1) {
+    displayValue = displayValue.slice(0, -1);
+  } else {
+    displayValue = '0';
+  }
+  updateDisplay();
+}
+
+//clear function
+function clear() {
+  displayValue = '0';
+  firstNumber = null;
+  operator = null;
+  waitingForOperand = false;
+  updateDisplay();
+}
+
+//operation logic
+function inputOperator(nextOperator) {
+  const inputValue = parseFloat(displayValue);
+
+  if (firstNumber === null && !isNaN(inputValue)) {
+    firstNumber = inputValue;
+  } else if (operator) {
+    const currentValue = firstNumber || 0;
+    const newValue = operate(operator, currentValue, inputValue);
+
+
+    //division by zero
+    if (typeof newValue === 'string') {
+      displayValue = newValue;
+      firstNumber = null;
+      operator = null;
+      waitingForOperand = true;
+      updateDisplay();
+      return;
+    }
+
+    displayValue = String(newValue);
+    firstNumber = newValue;
+    updateDisplay();
+  }
+  waitingForOperand = true;
+  operator = nextOperator;
+}
+
+function calculate() {
+  if (firstNumber === null || operator === null || waitingForOperand) {
+    return;
+  }
+
+  const inputValue = parseFloat(displayValue);
+  const newValue = operate(operator, firstNumber, inputValue);
+
+  if (typeof newValue === 'string') {
+    displayValue = newValue;
+    firstNumber = null;
+    operator = null;
+    waitingForOperand = true;
+  } else {
+    displayValue = String(newValue);
+    firstNumber = null;
+    operator = null;
+    waitingForOperand = true;
+  }
+  updateDisplay();
+}
