@@ -1,5 +1,6 @@
-const container = document.querySelector('#container');
+const container = document.getElementById('container');
 const buttons = container.querySelectorAll('button');
+const displayElement = document.getElementById('display');
 const state = {
   previouValue: null,
   currentInput: '0',
@@ -9,9 +10,10 @@ const state = {
 console.log(state);
 
 
+
 buttons.forEach(btn => {
   btn.addEventListener('click', (event) => {
-    console.log('Clicked:', event.currentTarget);
+    console.log(event.currentTarget);
     
   })
 })
@@ -58,3 +60,37 @@ function operate(operator, a, b) {
 
   return result;
 }
+
+function logState(eventSource) {
+  console.log(`${eventSource}`, state);
+}
+
+const digitButtons = document.querySelectorAll('[data-digit]');
+
+digitButtons.forEach(btn =>
+  btn.addEventListener('click', () => {
+    const digit = btn.dataset.digit;
+
+    if (state.resultDisplayed) {
+      state.currentInput = digit;
+      state.resultDisplayed = false;
+    } else {
+      state.currentInput =
+      state.currentInput === '0' ? digit : state.currentInput + digit;
+    }
+    displayElement.textContent = state.currentInput;
+    logState('digit ${digit}');
+  })
+)
+
+const dotButton = document.querySelector('[data-key="dot"]');
+dotButton.addEventListener('click', () => {
+  if (state.resultDisplayed) {
+    state.currentInput = '0.';
+    state.resultDisplayed = false;
+  } else if (!state.currentInput.includes('.')) {
+    state.currentInput += '.';
+  }
+  displayElement.textContent = state.currentInput;
+  logState('decimal');
+})
