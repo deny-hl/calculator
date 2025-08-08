@@ -1,3 +1,6 @@
+// Main script for calculator functionality
+// Implements basic math operations, chained calculations, keyboard and UI support, error handling, and UI updates
+
 const calculator = document.getElementById('calculator');
 const display = document.getElementById('display')
 
@@ -145,3 +148,62 @@ function calculate() {
   }
   updateDisplay();
 }
+// Enable keyboard support
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+
+  if (!isNaN(key)) {
+    inputDigit(key);
+  }
+
+  if (key === '.') {
+    inputDecimal();
+  }
+
+  if (key === '+' || key === '-' || key === '*' || key === '/') {
+    inputOperator(key);
+  }
+
+  if (key === 'Enter' || key === '=') {
+    calculate();
+  }
+
+  if (key === 'Backspace') {
+    backspace();
+  }
+
+  if (key.toLowerCase() === 'c') {
+    clear();
+  }
+});
+// Add click event listeners to all buttons
+calculator.addEventListener('click', (e) => {
+  const target = e.target;
+
+  if (target.matches('button')) {
+    if (target.dataset.digit) {
+      inputDigit(target.dataset.digit);
+    }
+
+    if (target.dataset.operator) {
+      inputOperator(target.dataset.operator);
+    }
+
+    if (target.dataset.action === 'equals') {
+      calculate();
+    }
+
+    if (target.dataset.action === 'clear') {
+      clear();
+    }
+
+    if (target.dataset.action === 'dot') {
+      inputDecimal();
+    }
+
+    if (target.dataset.action === 'backspace') {
+      backspace();
+    }
+  }
+});
+
