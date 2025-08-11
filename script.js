@@ -52,16 +52,42 @@ let displayValue = '0';
 let firstNumber = null;
 let operator = null;
 let waitingForOperand = false;
+let showingOperator = false;
 
 //function to update display
 function updateDisplay() {
   display.textContent = displayValue;
 }
 
+function showOperatorOnDisplay(op) {
+  const operatorSymbols = {
+    '+': '+',
+    '-' : '-',
+    '*' : '*',
+    '/' : '/'
+  };
+
+  const currentValue = displayValue;
+
+  displayValue = operatorSymbols[op] || op;
+  showingOperator = true;
+  updateDisplay();
+
+  setTimeout(() => {
+    if (showingOperator) {
+      displayValue = firstNumber !== null ? String(firstNumber) : currentValue;
+      showingOperator = false;
+      updateDisplay();
+
+    }
+  }, 3000);
+}
+
 function inputDigit(digit) {
-  if (waitingForOperand) {
+  if (waitingForOperand || showingOperator) {
     displayValue = digit;
     waitingForOperand = false;
+    showingOperator = false;
   } else {
     displayValue = displayValue === '0' ? digit : displayValue + digit;
   }
@@ -73,6 +99,7 @@ function inputDecimal() {
   if (waitingForOperand) {
     displayValue = '0.';
     waitingForOperand = false;
+    showingOperator = false;
   } else if (displayValue.indexOf('.') === -1) {
     displayValue += '.';
   }
@@ -81,7 +108,10 @@ function inputDecimal() {
 
 //backspace functionality
 function backspace() {
-  if (displayValue.length > 1) {
+  if (showingOperator) {
+    displayValue = firstNumber !== null ? String(firstNumber) : '0';
+    showingOperator = false;
+  } else if (displayValue.length > 1){
     displayValue = displayValue.slice(0, -1);
   } else {
     displayValue = '0';
@@ -95,6 +125,7 @@ function clear() {
   firstNumber = null;
   operator = null;
   waitingForOperand = false;
+  showingOperator = false;
   updateDisplay();
 }
 
@@ -102,29 +133,30 @@ function clear() {
 function inputOperator(nextOperator) {
   const inputValue = parseFloat(displayValue);
 
-  if (firstNumber === null && !isNaN(inputValue)) {
-    firstNumber = inputValue;
-  } else if (operator) {
-    const currentValue = firstNumber || 0;
-    const newValue = operate(operator, currentValue, inputValue);
-
+  if (firstNumber !== null && operator && !waitingForOperand && !showingOperator) {
+    const result = operate(operator, firstNumber, inputValue);
 
     //division by zero
-    if (typeof newValue === 'string') {
-      displayValue = newValue;
+    if (typeof result === 'string') {
+      displayValue = result;
       firstNumber = null;
       operator = null;
       waitingForOperand = true;
+      showingOperator = false;
       updateDisplay();
       return;
     }
-
-    displayValue = String(newValue);
-    firstNumber = newValue;
+    firstNumber = result;
+    displayValue = String(result);
     updateDisplay();
+
+  } else if (firstNumber === null && !isNaN(inputValue)) {
+    firstNumber = inputValue;
   }
+
   waitingForOperand = true;
   operator = nextOperator;
+  showOperatorOnDisplay(nextOperator);
 }
 
 function calculate() {
@@ -146,6 +178,7 @@ function calculate() {
     operator = null;
     waitingForOperand = true;
   }
+  showingOperator = false;
   updateDisplay();
 }
 // Enable keyboard support
@@ -165,14 +198,16 @@ document.addEventListener('keydown', (e) => {
   }
 
   if (key === 'Enter' || key === '=') {
+    e.preventDefault();
     calculate();
   }
 
   if (key === 'Backspace') {
+    e.preventDefault();
     backspace();
   }
 
-  if (key.toLowerCase() === 'c') {
+  if (key.toLowerCase() === 'c' || key === 'Escape') {
     clear();
   }
 });
@@ -207,3 +242,4 @@ calculator.addEventListener('click', (e) => {
   }
 });
 
+updateDisplay();
